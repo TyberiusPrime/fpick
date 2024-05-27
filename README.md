@@ -39,7 +39,8 @@ Navigate with keyboard:
 - ctrl-v to paste a direcotry from the clipboard and go there (if found)
 - backsapce deletes a character, or if search string is empty, goes up a directory
 - Type a substring to filter the list of files. Multiple substrings are searched in any order.
-- `Enter` to select a file, exit and print its path to stdout.
+- `Enter` on a file to select, exit and print its path to stdout.
+- `Enter` on a directory to descend into the directory.
 
 See `fpick --help` for more options.
 
