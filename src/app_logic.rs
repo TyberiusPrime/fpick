@@ -172,6 +172,12 @@ impl App {
         self.set_dir_cursor(self.dir_cursor);
     }
 
+    pub fn go_to_root(&mut self) {
+        while !self.parent_nodes.is_empty() {
+            self.go_up();
+        }
+    }
+
     pub fn get_selected_file_node(&self) -> Option<FileNode> {
         if self.child_tree_nodes.is_empty() || self.dir_cursor >= self.child_tree_nodes.len() {
             return None;
@@ -218,6 +224,19 @@ impl App {
         };
         if !self.picked_path.is_none() {
             self.quit();
+        }
+    }
+
+    pub fn pick_file_or_go_into(&mut self) {
+        let selected_node_o: Option<FileNode> = self.get_selected_file_node();
+        if selected_node_o.is_none() {
+            return;
+        }
+        let selected_node: FileNode = selected_node_o.unwrap();
+        if selected_node.file_type == crate::filesystem::FileType::Directory {
+            self.go_into()
+        } else {
+            self.pick_file()
         }
     }
 
@@ -275,6 +294,14 @@ impl App {
         self.render_tree_nodes();
     }
 
+    pub fn backspace_search_text_or_up(&mut self) {
+        if self.filter_text.is_empty() {
+            self.go_up();
+        } else {
+            self.backspace_search_text();
+        }
+    }
+
     pub fn clear_search_text(&mut self) {
         self.filter_text.clear();
         self.render_tree_nodes();
@@ -286,5 +313,28 @@ impl App {
 
     pub fn clear_error(&mut self) {
         self.error_message = None;
+    }
+
+    pub fn paste(&mut self) {
+        let xsel = std::process::Command::new("xsel")
+            .arg("--clipboard")
+            .output()
+            .expect("xsel to retrieve clipboard failed");
+        let clipboard: String = String::from_utf8_lossy(&xsel.stdout).trim().to_string();
+        if clipboard.starts_with('/') {
+            let mut maybe_path: PathBuf = clipboard.into();
+            if maybe_path.exists() {
+                while !maybe_path.is_dir() {
+                    maybe_path = maybe_path.parent().unwrap().to_path_buf();
+                }
+                self.starting_dir = maybe_path.to_string_lossy().to_string();
+                self.init().expect("init failed");
+            }
+        }
+        /* self.parent_nodes =
+            get_path_file_nodes(&self.starting_dir).context("reading path nodes")?;
+        self.starting_dir_nodes = self.parent_nodes.clone();
+        self.populate_current_child_nodes();
+        self.set_dir_cursor(0); */
     }
 }

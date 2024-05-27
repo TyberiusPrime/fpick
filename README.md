@@ -35,7 +35,10 @@ Navigate with keyboard:
 - `↑` and `↓` to move between files and directories,
 - `→` to enter a directory.
 - `←` to go up,
-- Type a phrase to filter the list of files
+- / to go to the root
+- ctrl-v to paste a direcotry from the clipboard and go there (if found)
+- backsapce deletes a character, or if search string is empty, goes up a directory
+- Type a substring to filter the list of files. Multiple substrings are searched in any order.
 - `Enter` to select a file, exit and print its path to stdout.
 
 See `fpick --help` for more options.

@@ -14,10 +14,11 @@ pub fn update(app: &mut App, key_event: KeyEvent) {
         KeyCode::Down => app.move_cursor(1),
         KeyCode::Up => app.move_cursor(-1),
         KeyCode::Left => app.go_up(),
-        KeyCode::Right | KeyCode::Tab | KeyCode::Char('/') => app.go_into(),
+        KeyCode::Right | KeyCode::Tab => app.go_into(),
+        KeyCode::Char('/') => app.go_to_root(),
         KeyCode::F(1) | KeyCode::F(2) | KeyCode::Char('>') => app.pick_current_dir(),
         KeyCode::F(5) => app.populate_current_child_nodes(),
-        KeyCode::Enter => app.pick_file(),
+        KeyCode::Enter => app.pick_file_or_go_into(),
         KeyCode::PageDown => app.move_cursor(20),
         KeyCode::PageUp => app.move_cursor(-20),
         KeyCode::Home => app.move_cursor(-(app.child_nodes.len() as i32)),
@@ -25,8 +26,12 @@ pub fn update(app: &mut App, key_event: KeyEvent) {
         KeyCode::Char('u') if key_event.modifiers == KeyModifiers::CONTROL => {
             app.clear_search_text();
         }
+        KeyCode::Char('v') | KeyCode::Char('v') if key_event.modifiers == KeyModifiers::CONTROL => {
+            app.paste()
+        }
+
         KeyCode::Backspace => {
-            app.backspace_search_text();
+            app.backspace_search_text_or_up();
         }
         KeyCode::Char('w') if key_event.modifiers == KeyModifiers::CONTROL => {
             app.backspace_search_text();
